@@ -1,26 +1,34 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as fs from "fs";
+import { generateFilesTemplate, ActionType } from './generate';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "auto-generate-template" is now active!');
+	const showWarningNotificationWithActions = vscode.commands.registerCommand('showModalWithActions', async (uri) => {
+		const actionList = [ActionType.Component, ActionType.Module, ActionType.Modal] as const;
+		const selection = await vscode.window.showInformationMessage('Choose your component type:', { modal: true }, ...actionList);
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('auto-generate-template.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from auto-generate-template!');
+		if (selection !== undefined) {
+			writeFile(uri.fsPath, selection);
+		}
 	});
 
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(showWarningNotificationWithActions);
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+const writeFile = (path: string, action: ActionType) => {
+	if (!path) {
+		path = vscode.window.activeTextEditor?.document.uri.fsPath ?? "";
+	}
+
+	const stats = fs.statSync(path);
+
+	if (stats.isDirectory()) {
+		const componentName = path.split('/').pop() || 'Test';
+		const filesTemplate = generateFilesTemplate(action, componentName);
+		filesTemplate.forEach(item => {
+			fs.writeFileSync(`${path}/${item.fileName}`, item.template);
+		});
+	}
+}
+

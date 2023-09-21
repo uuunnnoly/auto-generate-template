@@ -14,10 +14,24 @@
   "contributes": {
     "commands": [
       {
-        "command": "auto-generate-template.helloWorld",
-        "title": "Hello World"
+        "command": "showModalWithActions",
+        "title": "Add File Template"
       }
-    ]
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "showModalWithActions",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "showModalWithActions",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
