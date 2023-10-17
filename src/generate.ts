@@ -15,20 +15,20 @@ export enum ActionType {
 }
 
 export const generateFilesTemplate = (action: ActionType, componentName: string) => {
-  let filesTemplate: any[] = [];
+  let templates: any[] = [];
 
   switch (action) {
     case ActionType.Component:
-      filesTemplate = generateComponentTemplate(componentName);
+      templates = generateComponentTemplate(componentName);
       break;
     case ActionType.Modal:
-      filesTemplate = generateModalTemplate(componentName);
+      templates = generateModalTemplate(componentName);
       break;
     case ActionType.Module:
-      filesTemplate = generateModuleTemplate(componentName);
+      templates = generateModuleTemplate(componentName);
       break;
   };
-  return filesTemplate;
+  return templates;
 }
 
 const generateComponentTemplate = (componentName: string) => {
